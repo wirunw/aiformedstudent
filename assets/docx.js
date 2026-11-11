@@ -123,6 +123,7 @@ function documentXml(LOGO_RID,WID){
     x+=o.note?P('บันทึกของกลุ่ม: '+o.note):EMPTY();});
   x+=H1('สิ่งที่กลุ่มเราค้นพบ')+(d.find?body(d.find):EMPTY());
   x+=H1('คำถามชวนคุย')+DQ.map((q,i)=>P((i+1)+'. '+q,{after:60})).join('');
+  x+=P('ผู้สอน: ดร.ภก.วิรุณ เวชศิริ · ติดต่อ wirun.wetsiri@gmail.com',{before:200,after:0},{color:CI.gray,sz:24});
   const sect='<w:sectPr><w:footerReference w:type="default" r:id="rIdF"/><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="567" w:footer="567" w:gutter="0"/></w:sectPr>';
   return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><w:body>'+x+sect+'</w:body></w:document>';
 }
@@ -134,5 +135,5 @@ function exportPdf(id){const d=wfData(id),e=esc;
  $('#print').innerHTML='<div class="pband"><img src="data:image/png;base64,'+LOGO_B64+'" alt=""><p>AI for Health Students · Workflow Lab</p><h1>'+e(d.w.title)+'</h1><p class="pg">Workflow → Task → Prompt (R-T-F-C) · AI Harness</p></div>'+
  '<table class="pi"><tr><th>กลุ่ม</th><td>'+e(d.grp)+'</td></tr><tr><th>สมาชิก</th><td>'+e(d.mem)+'</td></tr><tr><th>วันที่</th><td>'+today()+'</td></tr><tr><th>ผู้เรียน</th><td>'+e(d.g.role)+'</td></tr><tr><th>หัวข้อที่ใช้ฝึก</th><td>'+e(d.g.topic)+'</td></tr><tr><th>สถานการณ์</th><td>'+e(d.w.sc)+'</td></tr></table>'+
  '<h2>ภาพรวมของ workflow</h2><table class="pt"><tr><th>ขั้น</th><th>ใครทำ</th><th>ผลลัพธ์</th><th>บันทึกของกลุ่ม</th></tr>'+rows+'</table><h2>รายละเอียดแต่ละขั้น</h2>'+steps+
- '<h2>สิ่งที่กลุ่มเราค้นพบ</h2><p>'+e(d.find||'(ยังไม่ได้กรอก)').replace(/\n/g,'<br>')+'</p><p class="pf">คณะเภสัชศาสตร์ มหาวิทยาลัยธรรมศาสตร์ · ดร.ภก.วิรุณ เวชศิริ · AI for Health Students Workflow Lab</p>';
+ '<h2>สิ่งที่กลุ่มเราค้นพบ</h2><p>'+e(d.find||'(ยังไม่ได้กรอก)').replace(/\n/g,'<br>')+'</p><p class="pf">คณะเภสัชศาสตร์ มหาวิทยาลัยธรรมศาสตร์ · ดร.ภก.วิรุณ เวชศิริ · wirun.wetsiri@gmail.com</p>';
  const t=document.title;document.title=fname(id,'pdf').replace('.pdf','');setTimeout(()=>{window.print();document.title=t},150)}
