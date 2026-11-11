@@ -109,3 +109,4 @@ button.copy.alt,a.copy.alt{background:transparent;color:var(--accent);border:1px
 @media (max-width:560px){details.uc>summary{grid-template-columns:auto 1fr}details.uc>summary .cat{display:none}}
 .stars{display:flex;align-items:center;gap:2px;flex-wrap:wrap}.stars .fl{margin:0 8px 0 0;font-family:var(--display);font-weight:600;font-size:.86rem}
 button.st{font-size:1.5rem;line-height:1;background:none;border:0;color:var(--line);cursor:pointer;padding:4px 3px;min-width:34px;min-height:38px}button.st.on{color:var(--honey)}
+.hz{display:flex;flex-wrap:wrap;gap:6px;font-size:.8rem}.hz span{background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:3px 9px}.hz b{font-family:var(--display);color:var(--accent);margin-right:4px}.hz .hzp{background:var(--soft);color:var(--accent);font-family:var(--display);font-weight:600;border-color:transparent}

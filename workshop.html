@@ -30,8 +30,13 @@
 </header>
 <section class="section">
   <h2>วิธีทำงานกลุ่ม</h2>
-  <div class="howto"><div>เลือก workflow 1 เรื่อง แล้วอ่านสถานการณ์</div><div>ดูทีละขั้น ว่าเป็นงานของ AI ของคน หรือทำร่วมกัน</div><div>คัดลอก prompt ไปลองใน Gemini ให้ดาวผลลัพธ์ แล้วจดสั้นๆ ว่าปรับอะไร</div><div>คุยตามคำถามท้ายการ์ด แล้วคัดลอกสรุปมาแชร์</div></div>
+  <div class="howto"><div>เลือก workflow 1 เรื่อง แล้วอ่านสถานการณ์</div><div>ดูทีละขั้น ว่าใครทำ และ Harness ของขั้นนั้นต้องมีอะไร</div><div>คัดลอก prompt ไปลองใน Gemini ให้ดาวผลลัพธ์ แล้วจดสั้นๆ ว่าปรับอะไร</div><div>คุยตามคำถามท้ายการ์ด แล้วคัดลอกสรุปมาแชร์</div></div>
   <p class="hint" style="margin-top:10px"><span class="tag ai">AI ทำ</span> <span class="tag hu">คนทำ</span> <span class="tag dr">ทำร่วมกัน</span> &nbsp;สิ่งที่พิมพ์จะเก็บไว้ในเครื่องนี้เท่านั้น</p>
+</section>
+<section class="section">
+  <h2>ทุกขั้นคิดด้วย AI Harness</h2>
+  <div class="box"><div class="eq"><span>Model</span><i>×</i><span>Prompt</span><i>×</i><span>Context</span><i>×</i><span>Tools</span><i>×</i><span class="hu">Human</span></div>
+  <p class="hint" style="margin-top:10px">แต่ละขั้นของ workflow บอกไว้ว่าควรใช้โมเดลแบบไหน ต้องให้ข้อมูลอะไร เปิดเครื่องมืออะไร และคนต้องตรวจอะไร ส่วน prompt ทุกชิ้นเขียนด้วยโครง <b>R-T-F-C</b>: บทบาท (Role) · งาน (Task) · รูปแบบ (Format) · เงื่อนไข (Constraint) แล้วคั่นด้วย --- ก่อนวางข้อมูล</p></div>
 </section>
 <section class="section">
   <h2>ตั้งค่าของฉัน</h2>
@@ -61,23 +66,25 @@
 <script src="assets/workflows.js"></script>
 <script>
 const K=(w,i)=>'amds-wf-'+w+'-'+i;
-function fill(t){const g=G();return t.replaceAll('{role}',g.role).replaceAll('{topic}',g.topic)}
+function fill(t){const g=G();return t.replaceAll('{role}',g.role).replaceAll('{topic}',g.topic).replaceAll('{pro}',g.F.pro)}
+const HN=['Model','Context','Tools','Human'];
+function hz(h){return '<div class="hz"><span class="hzp">Prompt: '+'R-T-F-C'+'</span>'+h.map((x,i)=>x==='-'?'':'<span><b>'+HN[i]+'</b> '+esc(x)+'</span>').join('')+'</div>'}
 function render(){const open=new Set($$('details.uc[open]').map(d=>d.dataset.id));
  $('#list').innerHTML=WF.map((w,n)=>'<details class="uc" data-id="'+w.id+'"'+(open.has(w.id)?' open':'')+'><summary><span class="num">'+(n+1)+'</span><span><h3>'+esc(w.title)+'</h3><p class="sub">'+esc(w.sc)+'</p></span><span class="cat">'+w.steps.length+' ขั้น</span></summary><div class="ucb">'+
-  w.steps.map((s,i)=>'<div class="step"><div class="sh"><span class="sn">ขั้นที่ '+(i+1)+'</span><b>'+esc(s[0])+'</b><span class="tag '+WHO[s[1]][0]+'">'+WHO[s[1]][1]+'</span></div><p class="hint">'+esc(s[2])+'</p>'+
-   (s[3]?'<pre class="pv" tabindex="0">'+esc(fill(s[3]))+'</pre><div class="actions"><button class="copy alt" type="button" data-w="'+w.id+'" data-i="'+i+'">คัดลอก prompt ตั้งต้น</button></div>':'')+
-   (s[1]==='hu'?'':'<div class="stars" role="group" aria-label="ให้ดาวผลลัพธ์ขั้นที่ '+(i+1)+'"><span class="fl">ผลลัพธ์ใช้ได้แค่ไหน</span>'+[1,2,3,4,5].map(n=>'<button type="button" class="st'+(+store.get(K(w.id,i)+'-s',0)>=n?' on':'')+'" data-star="'+K(w.id,i)+'-s" data-n="'+n+'" aria-label="'+n+' ดาว">★</button>').join('')+'</div>')+
-   '<input class="in" type="text" id="t-'+w.id+'-'+i+'" data-k="'+K(w.id,i)+'" aria-label="บันทึกสั้นๆ ของขั้นที่ '+(i+1)+'" placeholder="'+(s[1]==='hu'?'กลุ่มเราทำขั้นนี้อย่างไร (สั้นๆ)':'ผลลัพธ์เป็นอย่างไร หรือปรับ prompt ตรงไหนแล้วดีขึ้น (สั้นๆ)')+'" value="'+esc(store.get(K(w.id,i),''))+'"></div>').join('')+
+  w.steps.map((s,i)=>'<div class="step"><div class="sh"><span class="sn">ขั้นที่ '+(i+1)+'</span><b>'+esc(s.t)+'</b><span class="tag '+WHO[s.w][0]+'">'+WHO[s.w][1]+'</span></div><p class="hint">'+esc(s.hint)+'</p>'+hz(s.h).replace(s.p?'':/<span class="hzp">.*?<\/span>/,'')+
+   (s.p?'<pre class="pv" tabindex="0">'+esc(fill(s.p))+'</pre><div class="actions"><button class="copy alt" type="button" data-w="'+w.id+'" data-i="'+i+'">คัดลอก prompt ตั้งต้น</button></div>':'')+
+   (s.w==='hu'?'':'<div class="stars" role="group" aria-label="ให้ดาวผลลัพธ์ขั้นที่ '+(i+1)+'"><span class="fl">ผลลัพธ์ใช้ได้แค่ไหน</span>'+[1,2,3,4,5].map(n=>'<button type="button" class="st'+(+store.get(K(w.id,i)+'-s',0)>=n?' on':'')+'" data-star="'+K(w.id,i)+'-s" data-n="'+n+'" aria-label="'+n+' ดาว">★</button>').join('')+'</div>')+
+   '<input class="in" type="text" id="t-'+w.id+'-'+i+'" data-k="'+K(w.id,i)+'" aria-label="บันทึกสั้นๆ ของขั้นที่ '+(i+1)+'" placeholder="'+(s.w==='hu'?'กลุ่มเราทำขั้นนี้อย่างไร (สั้นๆ)':'ผลลัพธ์เป็นอย่างไร หรือปรับ prompt ตรงไหนแล้วดีขึ้น (สั้นๆ)')+'" value="'+esc(store.get(K(w.id,i),''))+'"></div>').join('')+
   '<div class="r2"><p class="hd">คำถามชวนคุยในกลุ่ม</p><ol class="q">'+DQ.map(q=>'<li>'+esc(q)+'</li>').join('')+'</ol></div>'+
   '<div><label class="fl" for="t-'+w.id+'-f">สิ่งที่กลุ่มเราค้นพบ</label><textarea id="t-'+w.id+'-f" data-k="'+K(w.id,'f')+'">'+esc(store.get(K(w.id,'f'),''))+'</textarea></div>'+
   '<div class="actions"><button class="copy" type="button" data-sum="'+w.id+'">คัดลอกสรุปของกลุ่ม</button><a class="copy alt" href="https://gemini.google.com/app" target="_blank" rel="noopener">เปิด Gemini</a></div></div></details>').join('')}
 function summary(id){const w=WF.find(x=>x.id===id);let o='Workflow Lab: '+w.title+'\n'+($('#grp').value||'กลุ่ม')+($('#mem').value?' ('+$('#mem').value+')':'')+'\n';
- w.steps.forEach((s,i)=>{const v=store.get(K(id,i),'').trim(),st=+store.get(K(id,i)+'-s',0);o+='\nขั้นที่ '+(i+1)+' '+s[0]+' ['+WHO[s[1]][1]+']'+(st?' '+'★'.repeat(st)+'☆'.repeat(5-st):'')+'\n'+(v||'-')+'\n'});
+ w.steps.forEach((s,i)=>{const v=store.get(K(id,i),'').trim(),st=+store.get(K(id,i)+'-s',0);o+='\nขั้นที่ '+(i+1)+' '+s.t+' ['+WHO[s.w][1]+']'+(st?' '+'★'.repeat(st)+'☆'.repeat(5-st):'')+'\n'+(v||'-')+'\n'});
  const f=store.get(K(id,'f'),'').trim();o+='\nสิ่งที่ค้นพบ:\n'+(f||'(ยังไม่ได้กรอก)');return o}
 $('#list').addEventListener('input',e=>{const t=e.target;if(t.dataset.k)store.set(t.dataset.k,t.value)});
 $('#list').addEventListener('click',e=>{const t=e.target;
  if(t.dataset.star){store.set(t.dataset.star,t.dataset.n);$$('[data-star="'+t.dataset.star+'"]').forEach(b=>b.classList.toggle('on',+b.dataset.n<=+t.dataset.n))}
- else if(t.dataset.w){copyText(fill(WF.find(x=>x.id===t.dataset.w).steps[+t.dataset.i][3]))}
+ else if(t.dataset.w){copyText(fill(WF.find(x=>x.id===t.dataset.w).steps[+t.dataset.i].p))}
  else if(t.dataset.sum){copyText(summary(t.dataset.sum))}});
 ['grp','mem'].forEach(id=>{const el=$('#'+id);el.value=store.get('amds-'+id,'');el.addEventListener('input',()=>store.set('amds-'+id,el.value))});
 initTheme();initSetup(render);render();

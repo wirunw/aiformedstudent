@@ -41,7 +41,7 @@
   <h2>AI Harness</h2>
   <p class="lead">ผลลัพธ์ที่ดีไม่ได้มาจากโมเดลอย่างเดียว ทั้ง 5 ตัวต้องดีพร้อมกัน ตัวใดเป็นศูนย์ ผลลัพธ์ก็เป็นศูนย์</p>
   <div class="box"><div class="eq"><span>Model</span><i>×</i><span>Prompt</span><i>×</i><span>Context</span><i>×</i><span>Tools</span><i>×</i><span class="hu">Human</span></div>
-  <p class="hint" style="margin-top:10px">prompt ทุกชิ้นในหน้านี้ใช้โครงเดียวกัน: บทบาท · งาน · รูปแบบ · เงื่อนไข แล้วคั่นด้วย --- ก่อนวางข้อมูล</p></div>
+  <p class="hint" style="margin-top:10px">prompt ทุกชิ้นในหน้านี้เขียนด้วยโครง <b>R-T-F-C</b>: บทบาท (Role) · งาน (Task) · รูปแบบ (Format) · เงื่อนไข (Constraint) แล้วคั่นด้วย --- ก่อนวางข้อมูล และทุกการ์ดบอก Harness ที่เหลือไว้ให้: ใช้โมเดลแบบไหน ให้ข้อมูลอะไร เปิดเครื่องมืออะไร และคนต้องตรวจอะไร</p></div>
 </section>
 <section class="section">
   <h2>3 ด่านก่อนใส่ข้อมูลลงใน AI</h2>
@@ -75,7 +75,7 @@ function pvHtml(u){const r=u.build(fv(u),G());const arr=Array.isArray(r)?r:[{t:'
 function spotHtml(){return '<p class="hint">'+esc(SPOT.q)+'</p><pre class="pv" id="spot-t" style="font-family:var(--body);font-size:.95rem">'+SPOT.parts.map(p=>p[1]?'<span data-e="'+p[1]+'">'+esc(p[0])+'</span>':esc(p[0])).join('')+'</pre><div class="actions"><button class="copy" type="button" id="spot-b">ดูเฉลย</button></div><div class="verify" id="spot-k" hidden><p class="hd">เฉลย 3 จุด</p><ul>'+SPOT.key.map(k=>'<li>'+esc(k)+'</li>').join('')+'</ul></div><div class="r2"><p class="hd">ข้อคิด</p><p style="font-family:var(--body);font-size:.92rem">คำตอบที่ผิดของ AI อ่านลื่นและมั่นใจเท่ากับคำตอบที่ถูก จึงต้องตรวจตัวเลข ชื่อยา และแหล่งอ้างอิงกับต้นทางทุกครั้ง</p></div>'}
 function render(){const L=$('#list');const open=new Set($$('details.uc[open]').map(d=>d.dataset.id));
  L.innerHTML=UC.filter(u=>cat==='all'||u.cat===cat).map(u=>{const n=UC.indexOf(u)+1,cn=CATS.find(c=>c[0]===u.cat)[1];
-  const body=u.special==='spot'?spotHtml():'<div class="opts">'+u.fields.map(f=>fieldHtml(u,f)).join('')+'</div><div class="pvwrap" id="pv-'+u.id+'" style="display:grid;gap:8px">'+pvHtml(u)+'</div><div class="verify"><p class="hd">ตรวจก่อนใช้</p><ul>'+u.verify.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div><div class="r2"><p class="hd">สั่งรอบสอง</p><p>'+esc(u.r2)+'</p><button class="copy alt" type="button" data-r2="'+u.id+'">คัดลอกคำสั่งรอบสอง</button></div>';
+  const body=u.special==='spot'?spotHtml():'<div class="hz"><span class="hzp">Prompt: R-T-F-C</span>'+['Model','Context','Tools'].map((n,i)=>HZ[u.id][i]==='-'?'':'<span><b>'+n+'</b> '+esc(HZ[u.id][i])+'</span>').join('')+'<span><b>Human</b> ดูกล่อง “ตรวจก่อนใช้”</span></div><div class="opts">'+u.fields.map(f=>fieldHtml(u,f)).join('')+'</div><div class="pvwrap" id="pv-'+u.id+'" style="display:grid;gap:8px">'+pvHtml(u)+'</div><div class="verify"><p class="hd">ตรวจก่อนใช้</p><ul>'+u.verify.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div><div class="r2"><p class="hd">สั่งรอบสอง</p><p>'+esc(u.r2)+'</p><button class="copy alt" type="button" data-r2="'+u.id+'">คัดลอกคำสั่งรอบสอง</button></div>';
   return '<details class="uc" data-id="'+u.id+'"'+(open.has(u.id)?' open':'')+'><summary><span class="num">'+n+'</span><span><h3>'+esc(u.title)+'</h3><p class="sub">'+esc(u.sub)+'</p></span><span class="cat">'+esc(cn)+'</span></summary><div class="ucb">'+body+'</div></details>'}).join('')}
 function refresh(){UC.forEach(u=>{const el=$('#pv-'+u.id);if(el)el.innerHTML=pvHtml(u)})}
 $('#filters').innerHTML=CATS.map(c=>'<button class="chip'+(c[0]==='all'?' on':'')+'" type="button" data-cat="'+c[0]+'">'+c[1]+'</button>').join('');
