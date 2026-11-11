@@ -102,7 +102,7 @@ async function buildDocx(WID){
 
 const today = ()=>{ try{ return new Date().toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'}); }catch(e){ return new Date().toISOString().slice(0,10); } };
 function monoXml(txt){ return String(txt).split('\n').map(l=>P(l||' ',{shade:'EEF1F6',after:0,ind:120},{sz:22})).join('')+P('',{after:80}); }
-function wfData(id){const w=WF.find(x=>x.id===id),g=G();return{w,g,grp:val('grp')||'(ยังไม่ได้ระบุกลุ่ม)',mem:val('mem')||'(ยังไม่ได้ระบุ)',
+function wfData(id){const w=WF.find(x=>x.id===id),g=G();g.topic=(store.get('amds-wf-'+id+'-topic','')||'').trim()||'(ยังไม่ได้ระบุ)';return{w,g,grp:val('grp')||'(ยังไม่ได้ระบุกลุ่ม)',mem:val('mem')||'(ยังไม่ได้ระบุ)',
  steps:w.steps.map((s,i)=>({s,i,st:+store.get(K(id,i)+'-s',0),note:(store.get(K(id,i),'')||'').trim(),hz:s.h.map((x,k)=>x==='-'?'':HN[k]+': '+x).filter(Boolean).join('  ·  ')})),find:(store.get(K(id,'f'),'')||'').trim()}}
 const starTxt=n=>n?'★'.repeat(n)+'☆'.repeat(5-n)+' ('+n+'/5)':'-';
 function documentXml(LOGO_RID,WID){
@@ -118,7 +118,7 @@ function documentXml(LOGO_RID,WID){
   x+=H1('รายละเอียดแต่ละขั้น');
   d.steps.forEach(o=>{x+=H2('ขั้นที่ '+(o.i+1)+' · '+o.s.t+' ('+WHO[o.s.w][1]+')')+P(o.s.hint,{after:60},{color:CI.gray,sz:26});
     if(o.hz)x+=P('Harness  '+(o.s.p?'Prompt: R-T-F-C  ·  ':'')+o.hz,{after:80},{sz:24,color:CI.navy});
-    if(o.s.p)x+=monoXml(fill(o.s.p));
+    if(o.s.p)x+=monoXml(fill(o.s.p,d.w.id));
     if(o.s.w!=='hu')x+=P('ผลลัพธ์: '+starTxt(o.st),{after:40},{b:true});
     x+=o.note?P('บันทึกของกลุ่ม: '+o.note):EMPTY();});
   x+=H1('สิ่งที่กลุ่มเราค้นพบ')+(d.find?body(d.find):EMPTY());
@@ -131,7 +131,7 @@ function fname(id,ext){const n=(val('grp').match(/\d+/)||[''])[0],d=new Date();r
 async function exportDocx(id){toast('กำลังสร้างไฟล์ Word...');try{const blob=await buildDocx(id);const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=fname(id,'docx');document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),4000);toast('ดาวน์โหลดไฟล์ Word แล้ว')}catch(e){toast('สร้างไฟล์ไม่สำเร็จ ใช้ปุ่มคัดลอกสรุปแทน')}}
 function exportPdf(id){const d=wfData(id),e=esc;
  const rows=d.steps.map(o=>'<tr><td>'+(o.i+1)+'. '+e(o.s.t)+'</td><td>'+WHO[o.s.w][1]+'</td><td>'+(o.s.w==='hu'?'-':starTxt(o.st))+'</td><td>'+e(o.note||'-')+'</td></tr>').join('');
- const steps=d.steps.map(o=>'<section class="ps"><h3>ขั้นที่ '+(o.i+1)+' · '+e(o.s.t)+' <small>('+WHO[o.s.w][1]+')</small></h3><p class="ph">'+e(o.s.hint)+'</p>'+(o.hz?'<p class="pz">Harness &nbsp;'+(o.s.p?'Prompt: R-T-F-C · ':'')+e(o.hz)+'</p>':'')+(o.s.p?'<pre>'+e(fill(o.s.p))+'</pre>':'')+(o.s.w!=='hu'?'<p><b>ผลลัพธ์:</b> '+starTxt(o.st)+'</p>':'')+'<p><b>บันทึกของกลุ่ม:</b> '+e(o.note||'(ยังไม่ได้กรอก)')+'</p></section>').join('');
+ const steps=d.steps.map(o=>'<section class="ps"><h3>ขั้นที่ '+(o.i+1)+' · '+e(o.s.t)+' <small>('+WHO[o.s.w][1]+')</small></h3><p class="ph">'+e(o.s.hint)+'</p>'+(o.hz?'<p class="pz">Harness &nbsp;'+(o.s.p?'Prompt: R-T-F-C · ':'')+e(o.hz)+'</p>':'')+(o.s.p?'<pre>'+e(fill(o.s.p,d.w.id))+'</pre>':'')+(o.s.w!=='hu'?'<p><b>ผลลัพธ์:</b> '+starTxt(o.st)+'</p>':'')+'<p><b>บันทึกของกลุ่ม:</b> '+e(o.note||'(ยังไม่ได้กรอก)')+'</p></section>').join('');
  $('#print').innerHTML='<div class="pband"><img src="data:image/png;base64,'+LOGO_B64+'" alt=""><p>AI for Health Students · Workflow Lab</p><h1>'+e(d.w.title)+'</h1><p class="pg">Workflow → Task → Prompt (R-T-F-C) · AI Harness</p></div>'+
  '<table class="pi"><tr><th>กลุ่ม</th><td>'+e(d.grp)+'</td></tr><tr><th>สมาชิก</th><td>'+e(d.mem)+'</td></tr><tr><th>วันที่</th><td>'+today()+'</td></tr><tr><th>ผู้เรียน</th><td>'+e(d.g.role)+'</td></tr><tr><th>หัวข้อที่ใช้ฝึก</th><td>'+e(d.g.topic)+'</td></tr><tr><th>สถานการณ์</th><td>'+e(d.w.sc)+'</td></tr></table>'+
  '<h2>ภาพรวมของ workflow</h2><table class="pt"><tr><th>ขั้น</th><th>ใครทำ</th><th>ผลลัพธ์</th><th>บันทึกของกลุ่ม</th></tr>'+rows+'</table><h2>รายละเอียดแต่ละขั้น</h2>'+steps+
