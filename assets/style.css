@@ -110,3 +110,21 @@ button.copy.alt,a.copy.alt{background:transparent;color:var(--accent);border:1px
 .stars{display:flex;align-items:center;gap:2px;flex-wrap:wrap}.stars .fl{margin:0 8px 0 0;font-family:var(--display);font-weight:600;font-size:.86rem}
 button.st{font-size:1.5rem;line-height:1;background:none;border:0;color:var(--line);cursor:pointer;padding:4px 3px;min-width:34px;min-height:38px}button.st.on{color:var(--honey)}
 .hz{display:flex;flex-wrap:wrap;gap:6px;font-size:.8rem}.hz span{background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:3px 9px}.hz b{font-family:var(--display);color:var(--accent);margin-right:4px}.hz .hzp{background:var(--soft);color:var(--accent);font-family:var(--display);font-weight:600;border-color:transparent}
+#print{display:none}
+@media print{
+ @page{size:A4;margin:16mm}
+ body{background:#fff!important;color:#2C2C2C!important}
+ .wrap,.toast{display:none!important}
+ #print{display:block;font-family:'Sarabun','TH Sarabun New',Tahoma,sans-serif;font-size:12pt;line-height:1.5;color:#2C2C2C}
+ #print *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ .pband{background:#C8102E;color:#fff;padding:16px 20px;border-bottom:5px solid #F4CD00;margin-bottom:12px}
+ .pband img{height:44px;display:block;margin-bottom:10px}
+ .pband p{margin:0;font-size:11pt}.pband h1{margin:2px 0;font-size:22pt;font-family:inherit;color:#fff}.pband .pg{color:#F4CD00;font-size:12pt}
+ #print h2{font-family:inherit;color:#C8102E;font-size:16pt;border-bottom:2px solid #F4CD00;margin:16px 0 8px;padding-bottom:2px;break-after:avoid}
+ #print h3{font-family:inherit;color:#1D2D5F;font-size:13pt;margin:0 0 2px}#print h3 small{font-weight:400;color:#777}
+ #print table{width:100%;border-collapse:collapse;margin-bottom:8px}#print th,#print td{border:1px solid #BDBDBD;padding:4px 8px;text-align:left;vertical-align:top;font-size:11pt}
+ .pi th{background:#FDF8EE;width:26%}.pt th{background:#C8102E;color:#fff}
+ .ps{break-inside:avoid;margin-bottom:12px}.ps p{margin:2px 0}.ph{color:#777}.pz{color:#1D2D5F;font-size:10.5pt}
+ #print pre{background:#EEF1F6;border-left:4px solid #C8102E;padding:6px 10px;white-space:pre-wrap;font-family:inherit;font-size:10.5pt;margin:4px 0}
+ .pf{margin-top:18px;border-top:2px solid #C8102E;padding-top:4px;text-align:center;color:#9E9E9E;font-size:9.5pt}
+}

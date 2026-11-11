@@ -9,8 +9,8 @@
 <meta name="theme-color" content="#1D2D52">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=0823">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&family=Bai+Jamjuree:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/style.css?v=0840">
 <script>try{var t=localStorage.getItem('amds-theme');if(t&&t!=='auto')document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
 </head>
 <body>
@@ -30,7 +30,7 @@
 </header>
 <section class="section">
   <h2>วิธีทำงานกลุ่ม</h2>
-  <div class="howto"><div>เลือก workflow 1 เรื่อง แล้วอ่านสถานการณ์</div><div>ดูทีละขั้น ว่าใครทำ และ Harness ของขั้นนั้นต้องมีอะไร</div><div>คัดลอก prompt ไปลองใน Gemini ให้ดาวผลลัพธ์ แล้วจดสั้นๆ ว่าปรับอะไร</div><div>คุยตามคำถามท้ายการ์ด แล้วคัดลอกสรุปมาแชร์</div></div>
+  <div class="howto"><div>เลือก workflow 1 เรื่อง แล้วอ่านสถานการณ์</div><div>ดูทีละขั้น ว่าใครทำ และ Harness ของขั้นนั้นต้องมีอะไร</div><div>คัดลอก prompt ไปลองใน Gemini ให้ดาวผลลัพธ์ แล้วจดสั้นๆ ว่าปรับอะไร</div><div>คุยตามคำถามท้ายการ์ด แล้วส่งออกเป็น Word หรือ PDF มาแชร์</div></div>
   <p class="hint" style="margin-top:10px"><span class="tag ai">AI ทำ</span> <span class="tag hu">คนทำ</span> <span class="tag dr">ทำร่วมกัน</span> &nbsp;สิ่งที่พิมพ์จะเก็บไว้ในเครื่องนี้เท่านั้น</p>
 </section>
 <section class="section">
@@ -61,9 +61,12 @@
 </section>
 <p class="credit">ดร.ภก.วิรุณ เวชศิริ (อ.หมี) · คณะเภสัชศาสตร์ มหาวิทยาลัยธรรมศาสตร์<br>เคสและข้อมูลผู้ป่วยทั้งหมดเป็นข้อมูลสมมติเพื่อการเรียน ห้ามใส่ข้อมูลผู้ป่วยจริงลงใน AI</p>
 </div>
+<div id="print" aria-hidden="true"></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
-<script src="assets/common.js?v=0823"></script>
-<script src="assets/workflows.js?v=0823"></script>
+<script src="assets/common.js?v=0840"></script>
+<script src="assets/workflows.js?v=0840"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="assets/docx.js?v=0840"></script>
 <script>
 const K=(w,i)=>'amds-wf-'+w+'-'+i;
 function fill(t){const g=G();return t.replaceAll('{role}',g.role).replaceAll('{topic}',g.topic).replaceAll('{pro}',g.F.pro)}
@@ -77,7 +80,7 @@ function render(){const open=new Set($$('details.uc[open]').map(d=>d.dataset.id)
    '<input class="in" type="text" id="t-'+w.id+'-'+i+'" data-k="'+K(w.id,i)+'" aria-label="บันทึกสั้นๆ ของขั้นที่ '+(i+1)+'" placeholder="'+(s.w==='hu'?'กลุ่มเราทำขั้นนี้อย่างไร (สั้นๆ)':'ผลลัพธ์เป็นอย่างไร หรือปรับ prompt ตรงไหนแล้วดีขึ้น (สั้นๆ)')+'" value="'+esc(store.get(K(w.id,i),''))+'"></div>').join('')+
   '<div class="r2"><p class="hd">คำถามชวนคุยในกลุ่ม</p><ol class="q">'+DQ.map(q=>'<li>'+esc(q)+'</li>').join('')+'</ol></div>'+
   '<div><label class="fl" for="t-'+w.id+'-f">สิ่งที่กลุ่มเราค้นพบ</label><textarea id="t-'+w.id+'-f" data-k="'+K(w.id,'f')+'">'+esc(store.get(K(w.id,'f'),''))+'</textarea></div>'+
-  '<div class="actions"><button class="copy" type="button" data-sum="'+w.id+'">คัดลอกสรุปของกลุ่ม</button><a class="copy alt" href="https://gemini.google.com/app" target="_blank" rel="noopener">เปิด Gemini</a></div></div></details>').join('')}
+  '<div class="actions"><button class="copy" type="button" data-docx="'+w.id+'">ดาวน์โหลด Word (.docx)</button><button class="copy" type="button" data-pdf="'+w.id+'">บันทึกเป็น PDF</button><button class="copy alt" type="button" data-sum="'+w.id+'">คัดลอกสรุปของกลุ่ม</button><a class="copy alt" href="https://gemini.google.com/app" target="_blank" rel="noopener">เปิด Gemini</a></div></div></details>').join('')}
 function summary(id){const w=WF.find(x=>x.id===id);let o='Workflow Lab: '+w.title+'\n'+($('#grp').value||'กลุ่ม')+($('#mem').value?' ('+$('#mem').value+')':'')+'\n';
  w.steps.forEach((s,i)=>{const v=store.get(K(id,i),'').trim(),st=+store.get(K(id,i)+'-s',0);o+='\nขั้นที่ '+(i+1)+' '+s.t+' ['+WHO[s.w][1]+']'+(st?' '+'★'.repeat(st)+'☆'.repeat(5-st):'')+'\n'+(v||'-')+'\n'});
  const f=store.get(K(id,'f'),'').trim();o+='\nสิ่งที่ค้นพบ:\n'+(f||'(ยังไม่ได้กรอก)');return o}
@@ -85,7 +88,9 @@ $('#list').addEventListener('input',e=>{const t=e.target;if(t.dataset.k)store.se
 $('#list').addEventListener('click',e=>{const t=e.target;
  if(t.dataset.star){store.set(t.dataset.star,t.dataset.n);$$('[data-star="'+t.dataset.star+'"]').forEach(b=>b.classList.toggle('on',+b.dataset.n<=+t.dataset.n))}
  else if(t.dataset.w){copyText(fill(WF.find(x=>x.id===t.dataset.w).steps[+t.dataset.i].p))}
- else if(t.dataset.sum){copyText(summary(t.dataset.sum))}});
+ else if(t.dataset.sum){copyText(summary(t.dataset.sum))}
+ else if(t.dataset.docx){exportDocx(t.dataset.docx)}
+ else if(t.dataset.pdf){exportPdf(t.dataset.pdf)}});
 ['grp','mem'].forEach(id=>{const el=$('#'+id);el.value=store.get('amds-'+id,'');el.addEventListener('input',()=>store.set('amds-'+id,el.value))});
 initTheme();initSetup(render);render();
 </script>
