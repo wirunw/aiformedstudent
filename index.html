@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=0845">
+<link rel="stylesheet" href="assets/style.css?v=0925">
 <script>try{var t=localStorage.getItem('amds-theme');if(t&&t!=='auto')document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
 </head>
 <body>
@@ -30,11 +30,10 @@
 </header>
 <section class="section">
   <h2>ตั้งค่าของฉัน</h2>
-  <p class="lead">เลือกครั้งเดียว prompt ทุกชิ้นจะปรับบทบาทและหัวข้อให้เอง</p>
-  <div class="box grid3">
+  <p class="lead">เลือกครั้งเดียว prompt ทุกชิ้นจะปรับบทบาทให้เอง ส่วนหัวข้อ ใส่ในแต่ละการ์ดได้ตามงาน</p>
+  <div class="box grid2">
     <div><label class="fl" for="g-fac">คณะ</label><select id="g-fac"><option value="med">แพทยศาสตร์</option><option value="pharm">เภสัชศาสตร์</option><option value="nurse">พยาบาลศาสตร์</option><option value="other">สาขาสุขภาพอื่น</option></select></div>
     <div><label class="fl" for="g-year">ชั้นปี</label><select id="g-year"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></div>
-    <div><label class="fl" for="g-topic">หัวข้อที่กำลังเรียน</label><input class="in" id="g-topic" type="text" autocomplete="off"></div>
   </div>
 </section>
 <section class="section">
@@ -60,29 +59,32 @@
 <p class="credit">ดร.ภก.วิรุณ เวชศิริ (อ.หมี) · คณะเภสัชศาสตร์ มหาวิทยาลัยธรรมศาสตร์<br>อยากปรึกษาเรื่องการใช้ AI ติดต่อได้ที่ <a href="mailto:wirun.wetsiri@gmail.com">wirun.wetsiri@gmail.com</a><br>เคสและข้อมูลผู้ป่วยทั้งหมดเป็นข้อมูลสมมติเพื่อการเรียน ห้ามใส่ข้อมูลผู้ป่วยจริงลงใน AI</p>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
-<script src="assets/common.js?v=0845"></script>
-<script src="assets/cases.js?v=0845"></script>
+<script src="assets/common.js?v=0925"></script>
+<script src="assets/cases.js?v=0925"></script>
 <script>
 let cat='all';const vals={};
+const TOPIC={id:'topic',label:'หัวข้อ',type:'text',def:'',full:1,topic:1};
+UC.forEach(u=>{if(u.build&&u.build.toString().includes('g.topic'))u.fields=[TOPIC].concat(u.fields)});
+function GT(u){const g=G(),v=fv(u);g.topic=(v.topic||'').trim()||'[ใส่หัวข้อ เช่น '+g.F.topic+']';return g}
 function fv(u){const o={};(u.fields||[]).forEach(f=>{const k=u.id+'.'+f.id;o[f.id]=vals[k]!==undefined?vals[k]:(f.opts?f.opts[0]:(f.def||''))});return o}
 function fieldHtml(u,f){const id='f-'+u.id+'-'+f.id,cur=fv(u)[f.id];let c;
  if(f.opts)c='<select id="'+id+'" data-u="'+u.id+'" data-f="'+f.id+'">'+f.opts.map(o=>'<option'+(o===cur?' selected':'')+'>'+esc(o)+'</option>').join('')+'</select>';
  else if(f.type==='area')c='<textarea id="'+id+'" data-u="'+u.id+'" data-f="'+f.id+'">'+esc(cur)+'</textarea>';
- else c='<input class="in" type="text" id="'+id+'" data-u="'+u.id+'" data-f="'+f.id+'" value="'+esc(cur)+'">';
+ else c='<input class="in" type="text" id="'+id+'" data-u="'+u.id+'" data-f="'+f.id+'" value="'+esc(cur)+'"'+(f.topic?' data-topic="1" placeholder="เช่น '+esc(G().F.topic)+'"':'')+'>';
  return '<div'+(f.full?' class="full"':'')+'><label class="fl" for="'+id+'">'+esc(f.label)+'</label>'+c+'</div>'}
-function pvHtml(u){const r=u.build(fv(u),G());const arr=Array.isArray(r)?r:[{t:'',p:r}];
+function pvHtml(u){const r=u.build(fv(u),GT(u));const arr=Array.isArray(r)?r:[{t:'',p:r}];
  return arr.map((s,i)=>(s.t?'<p class="hd">'+esc(s.t)+'</p>':'')+'<pre class="pv" tabindex="0">'+esc(s.p)+'</pre><div class="actions"><button class="copy" type="button" data-copy="'+u.id+'" data-i="'+i+'">คัดลอก prompt</button>'+(i===0?'<a class="copy alt" href="https://gemini.google.com/app" target="_blank" rel="noopener">เปิด Gemini</a>':'')+'</div>').join('')}
 function spotHtml(){return '<p class="hint">'+esc(SPOT.q)+'</p><pre class="pv" id="spot-t" style="font-family:var(--body);font-size:.95rem">'+SPOT.parts.map(p=>p[1]?'<span data-e="'+p[1]+'">'+esc(p[0])+'</span>':esc(p[0])).join('')+'</pre><div class="actions"><button class="copy" type="button" id="spot-b">ดูเฉลย</button></div><div class="verify" id="spot-k" hidden><p class="hd">เฉลย 3 จุด</p><ul>'+SPOT.key.map(k=>'<li>'+esc(k)+'</li>').join('')+'</ul></div><div class="r2"><p class="hd">ข้อคิด</p><p style="font-family:var(--body);font-size:.92rem">คำตอบที่ผิดของ AI อ่านลื่นและมั่นใจเท่ากับคำตอบที่ถูก จึงต้องตรวจตัวเลข ชื่อยา และแหล่งอ้างอิงกับต้นทางทุกครั้ง</p></div>'}
 function render(){const L=$('#list');const open=new Set($$('details.uc[open]').map(d=>d.dataset.id));
  L.innerHTML=UC.filter(u=>cat==='all'||u.cat===cat).map(u=>{const n=UC.indexOf(u)+1,cn=CATS.find(c=>c[0]===u.cat)[1];
   const body=u.special==='spot'?spotHtml():'<div class="hz"><span class="hzp">Prompt: R-T-F-C</span>'+['Model','Context','Tools'].map((n,i)=>((typeof HZ!=='undefined'&&HZ[u.id])||['-','-','-'])[i]==='-'?'':'<span><b>'+n+'</b> '+esc(HZ[u.id][i])+'</span>').join('')+'<span><b>Human</b> ดูกล่อง “ตรวจก่อนใช้”</span></div><div class="opts">'+u.fields.map(f=>fieldHtml(u,f)).join('')+'</div><div class="pvwrap" id="pv-'+u.id+'" style="display:grid;gap:8px">'+pvHtml(u)+'</div><div class="verify"><p class="hd">ตรวจก่อนใช้</p><ul>'+u.verify.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div><div class="r2"><p class="hd">สั่งรอบสอง</p><p>'+esc(u.r2)+'</p><button class="copy alt" type="button" data-r2="'+u.id+'">คัดลอกคำสั่งรอบสอง</button></div>';
   return '<details class="uc" data-id="'+u.id+'"'+(open.has(u.id)?' open':'')+'><summary><span class="num">'+n+'</span><span><h3>'+esc(u.title)+'</h3><p class="sub">'+esc(u.sub)+'</p></span><span class="cat">'+esc(cn)+'</span></summary><div class="ucb">'+body+'</div></details>'}).join('')}
-function refresh(){UC.forEach(u=>{const el=$('#pv-'+u.id);if(el)el.innerHTML=pvHtml(u)})}
+function refresh(){UC.forEach(u=>{const el=$('#pv-'+u.id);if(el)el.innerHTML=pvHtml(u)});$$('[data-topic]').forEach(i=>i.placeholder='เช่น '+G().F.topic)}
 $('#filters').innerHTML=CATS.map(c=>'<button class="chip'+(c[0]==='all'?' on':'')+'" type="button" data-cat="'+c[0]+'">'+c[1]+'</button>').join('');
 $('#filters').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;cat=b.dataset.cat;$$('.chip').forEach(x=>x.classList.toggle('on',x===b));render()});
 $('#list').addEventListener('input',e=>{const t=e.target;if(!t.dataset.u)return;vals[t.dataset.u+'.'+t.dataset.f]=t.value;const u=UC.find(x=>x.id===t.dataset.u);$('#pv-'+u.id).innerHTML=pvHtml(u)});
 $('#list').addEventListener('click',e=>{const t=e.target;
- if(t.dataset.copy){const u=UC.find(x=>x.id===t.dataset.copy);const r=u.build(fv(u),G());copyText(Array.isArray(r)?r[+t.dataset.i].p:r)}
+ if(t.dataset.copy){const u=UC.find(x=>x.id===t.dataset.copy);const r=u.build(fv(u),GT(u));copyText(Array.isArray(r)?r[+t.dataset.i].p:r)}
  else if(t.dataset.r2){copyText(UC.find(x=>x.id===t.dataset.r2).r2)}
  else if(t.id==='spot-b'){$('#spot-k').hidden=false;$$('#spot-t [data-e]').forEach(s=>s.classList.add('err'));t.disabled=true}});
 initTheme();initSetup(refresh);render();
