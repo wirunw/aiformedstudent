@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AI for Health Students · Workflow Lab</title>
+<meta name="description" content="คลัง prompt สำหรับนักศึกษาแพทย์ เภสัช พยาบาล: ติวสอบ ฝึกคิดจากเคส ค้นงานวิจัย ทำสื่อนำเสนอ และฝึกตรวจคำตอบของ AI">
+<meta name="author" content="ดร.ภก.วิรุณ เวชศิริ">
+<meta name="theme-color" content="#1D2D52">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+<script>try{var t=localStorage.getItem('amds-theme');if(t&&t!=='auto')document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+</head>
+<body>
+<div class="wrap">
+<div class="top">
+  <nav class="nav" aria-label="หน้า"><a href="index.html">คลัง Prompt</a><a href="workshop.html" class="on">Workflow Lab (งานกลุ่ม)</a></nav>
+  <button class="tbtn" id="theme" type="button" aria-label="สลับโหมดสี">◐ ตามเครื่อง</button>
+</div>
+<header class="hero">
+  <div class="txt">
+    <div class="eyebrow">AI FOR HEALTH STUDENTS</div>
+    <h1>Workflow Lab</h1>
+    <p>งานกลุ่ม: มองงานของนักศึกษาเป็น workflow ย่อยเป็น task แล้วแทนแต่ละ task ด้วย prompt</p>
+    <div class="by">ดร.ภก.วิรุณ เวชศิริ</div>
+  </div>
+  <img src="assets/mascot.webp" alt="อ.หมี มาสคอตของผู้สอน" width="176" height="166">
+</header>
+<section class="section">
+  <h2>วิธีทำงานกลุ่ม</h2>
+  <div class="howto"><div>เลือก workflow 1 เรื่อง แล้วอ่านสถานการณ์</div><div>ดูทีละขั้น ว่าเป็นงานของ AI ของคน หรือทำร่วมกัน</div><div>เขียน prompt ของกลุ่ม ลองใน Gemini แล้วปรับจนพอใจ</div><div>คุยตามคำถามท้ายการ์ด แล้วคัดลอกสรุปมาแชร์</div></div>
+  <p class="hint" style="margin-top:10px"><span class="tag ai">AI ทำ</span> <span class="tag hu">คนทำ</span> <span class="tag dr">ทำร่วมกัน</span> &nbsp;สิ่งที่พิมพ์จะเก็บไว้ในเครื่องนี้เท่านั้น</p>
+</section>
+<section class="section">
+  <h2>ตั้งค่าของฉัน</h2>
+  <p class="lead">เลือกครั้งเดียว prompt ตั้งต้นของทุกขั้นจะปรับบทบาทและหัวข้อให้เอง</p>
+  <div class="box grid3">
+    <div><label class="fl" for="g-fac">คณะ</label><select id="g-fac"><option value="med">แพทยศาสตร์</option><option value="pharm">เภสัชศาสตร์</option><option value="nurse">พยาบาลศาสตร์</option><option value="other">สาขาสุขภาพอื่น</option></select></div>
+    <div><label class="fl" for="g-year">ชั้นปี</label><select id="g-year"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></div>
+    <div><label class="fl" for="g-topic">หัวข้อที่กำลังเรียน</label><input class="in" id="g-topic" type="text" autocomplete="off"></div>
+  </div>
+</section>
+<section class="section">
+  <h2>กลุ่มของเรา</h2>
+  <div class="box grid2">
+    <div><label class="fl" for="grp">ชื่อกลุ่ม</label><input class="in" id="grp" type="text" autocomplete="off" placeholder="เช่น กลุ่ม 3"></div>
+    <div><label class="fl" for="mem">สมาชิก</label><input class="in" id="mem" type="text" autocomplete="off"></div>
+  </div>
+</section>
+<section class="section">
+  <h2>เลือก workflow</h2>
+  <p class="lead">8 เรื่อง เรื่องละ 5–6 ขั้น กดเปิดเรื่องที่กลุ่มสนใจ</p>
+  <div id="list"></div>
+</section>
+<p class="credit">ดร.ภก.วิรุณ เวชศิริ (อ.หมี) · คณะเภสัชศาสตร์ มหาวิทยาลัยธรรมศาสตร์<br>เคสและข้อมูลผู้ป่วยทั้งหมดเป็นข้อมูลสมมติเพื่อการเรียน ห้ามใส่ข้อมูลผู้ป่วยจริงลงใน AI</p>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="assets/common.js"></script>
+<script src="assets/workflows.js"></script>
+<script>
+const K=(w,i)=>'amds-wf-'+w+'-'+i;
+function fill(t){const g=G();return t.replaceAll('{role}',g.role).replaceAll('{topic}',g.topic)}
+function render(){const open=new Set($$('details.uc[open]').map(d=>d.dataset.id));
+ $('#list').innerHTML=WF.map((w,n)=>'<details class="uc" data-id="'+w.id+'"'+(open.has(w.id)?' open':'')+'><summary><span class="num">'+(n+1)+'</span><span><h3>'+esc(w.title)+'</h3><p class="sub">'+esc(w.sc)+'</p></span><span class="cat">'+w.steps.length+' ขั้น</span></summary><div class="ucb">'+
+  w.steps.map((s,i)=>'<div class="step"><div class="sh"><span class="sn">ขั้นที่ '+(i+1)+'</span><b>'+esc(s[0])+'</b><span class="tag '+WHO[s[1]][0]+'">'+WHO[s[1]][1]+'</span></div><p class="hint">'+esc(s[2])+'</p>'+
+   (s[3]?'<pre class="pv" tabindex="0">'+esc(fill(s[3]))+'</pre><div class="actions"><button class="copy alt" type="button" data-w="'+w.id+'" data-i="'+i+'">คัดลอก prompt ตั้งต้น</button></div>':'')+
+   '<label class="fl" for="t-'+w.id+'-'+i+'">'+(s[1]==='hu'?'กลุ่มเราทำขั้นนี้อย่างไร':'prompt ของกลุ่มเรา (ปรับจากตั้งต้น หรือเขียนใหม่)')+'</label><textarea id="t-'+w.id+'-'+i+'" data-k="'+K(w.id,i)+'">'+esc(store.get(K(w.id,i),''))+'</textarea></div>').join('')+
+  '<div class="r2"><p class="hd">คำถามชวนคุยในกลุ่ม</p><ol class="q">'+DQ.map(q=>'<li>'+esc(q)+'</li>').join('')+'</ol></div>'+
+  '<div><label class="fl" for="t-'+w.id+'-f">สิ่งที่กลุ่มเราค้นพบ</label><textarea id="t-'+w.id+'-f" data-k="'+K(w.id,'f')+'">'+esc(store.get(K(w.id,'f'),''))+'</textarea></div>'+
+  '<div class="actions"><button class="copy" type="button" data-sum="'+w.id+'">คัดลอกสรุปของกลุ่ม</button><a class="copy alt" href="https://gemini.google.com/app" target="_blank" rel="noopener">เปิด Gemini</a></div></div></details>').join('')}
+function summary(id){const w=WF.find(x=>x.id===id);let o='Workflow Lab: '+w.title+'\n'+($('#grp').value||'กลุ่ม')+($('#mem').value?' ('+$('#mem').value+')':'')+'\n';
+ w.steps.forEach((s,i)=>{const v=store.get(K(id,i),'').trim();o+='\nขั้นที่ '+(i+1)+' '+s[0]+' ['+WHO[s[1]][1]+']\n'+(v||'(ยังไม่ได้กรอก)')+'\n'});
+ const f=store.get(K(id,'f'),'').trim();o+='\nสิ่งที่ค้นพบ:\n'+(f||'(ยังไม่ได้กรอก)');return o}
+$('#list').addEventListener('input',e=>{const t=e.target;if(t.dataset.k)store.set(t.dataset.k,t.value)});
+$('#list').addEventListener('click',e=>{const t=e.target;
+ if(t.dataset.w){copyText(fill(WF.find(x=>x.id===t.dataset.w).steps[+t.dataset.i][3]))}
+ else if(t.dataset.sum){copyText(summary(t.dataset.sum))}});
+['grp','mem'].forEach(id=>{const el=$('#'+id);el.value=store.get('amds-'+id,'');el.addEventListener('input',()=>store.set('amds-'+id,el.value))});
+initTheme();initSetup(render);render();
+</script>
+</body>
+</html>
